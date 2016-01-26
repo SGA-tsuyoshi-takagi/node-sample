@@ -19,6 +19,19 @@ var contacts = {
   }
 };
 
+function addContact(contact) {
+
+  var id = generateLocalContactID();
+  if(!id){
+     return null;
+   }
+
+   contact.id = id;
+   contacts[id] = contact;
+   return contact;
+
+}
+
 function getLambdaURL() {
   var config;
   if (process.env.NODE_ENV === 'heroku') {
@@ -90,7 +103,7 @@ app.get('/contacts/:id', function (req, res) {
 
 app.get('/api/1/test', function (req, res) {
   res.json({
-    message: 'api test succeeded'
+    message: 'api test succeeded!!'
   });
 });
 
@@ -109,10 +122,38 @@ app.get('/api/1/contacts', function (req, res) {
 
 app.get('/api/1/contacts/:id', function (req, res) {
   // TODO: Get a contact object by ID
+  var  key = req.params.id;
+  res.json({
+    //message: 'api test succeeded'
+    message: contacts[key]
+  });
 });
 
 app.post('/api/1/contacts', function (req, res) {
+
   // TODO: Create a contact
+  var contact = addContact(req.body);
+  if(!contact) {
+    res.status(500).json({
+      error: 'cannot create contact'
+   });
+   return;
+  }
+  res.status(200).json(contact);
+
+  /*
+  var reqBody = req.body; 
+  var key = genreateLocalContactId();
+
+  contacts[key] = reqBody;
+  //res.status(200).json(contact);
+
+  res.json({
+    //message: 'api test succeeded'
+      message: contacts[key]
+  });
+  */
+
 });
 
 app.delete('/api/1/contacts/:id', function (req, res) {
